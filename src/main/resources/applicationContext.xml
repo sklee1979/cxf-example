@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+    xmlns:http="http://cxf.apache.org/transports/http/configuration"
+    xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+    xmlns:sec="http://cxf.apache.org/configuration/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+       http://cxf.apache.org/transports/http/configuration
+       http://cxf.apache.org/schemas/configuration/http-conf.xsd
+       http://cxf.apache.org/transports/http-jetty/configuration   
+       http://cxf.apache.org/schemas/configuration/http-jetty.xsd
+       http://cxf.apache.org/configuration/security
+       http://cxf.apache.org/schemas/configuration/security.xsd">
+ 
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+
+    <jaxrs:server id="jaxrsservice" address="https://localhost:8443/" >
+        <jaxrs:serviceBeans>
+            <ref bean="additionService" />
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+    
+    <httpj:engine-factory id="port-8443-tls-config">
+        <httpj:engine port="8443">
+            <httpj:tlsServerParameters>
+                <sec:keyManagers keyPassword="password">
+	                <sec:keyStore type="JKS" password="password" 
+	                    file="src/keys/cxfserver.jks"/>
+	      		</sec:keyManagers>
+	      		<sec:trustManagers>
+	          	    <sec:keyStore type="JKS" password="password"
+	                    file="src/keys/cxfserver.jks"/>
+	     		</sec:trustManagers>
+            </httpj:tlsServerParameters>
+        </httpj:engine>
+    </httpj:engine-factory>
+
+    <bean id="additionService" class="com.kole.ws.cxf.AdditionImpl" />
+
+</beans>

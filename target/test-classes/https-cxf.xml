@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+    xmlns:http="http://cxf.apache.org/transports/http/configuration"
+    xmlns:sec="http://cxf.apache.org/configuration/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+       http://cxf.apache.org/transports/http/configuration
+       http://cxf.apache.org/schemas/configuration/http-conf.xsd
+       http://cxf.apache.org/configuration/security
+       http://cxf.apache.org/schemas/configuration/security.xsd">
+
+    <http:conduit name="https://localhost:8443/.*">
+	    <http:tlsClientParameters>
+	        <sec:trustManagers>
+                <sec:keyStore type="JKS" password="password" file="src/keys/cxfclient.jks"/>
+            </sec:trustManagers>
+            <sec:keyManagers keyPassword="password">
+                <sec:keyStore type="JKS" password="password" file="src/keys/cxfclient.jks"/>
+            </sec:keyManagers>
+	        <sec:cipherSuitesFilter>
+	        <!-- these filters ensure that a ciphersuite with
+	          export-suitable or null encryption is used,
+	          but exclude anonymous Diffie-Hellman key change as
+	          this is vulnerable to man-in-the-middle attacks -->
+		        <sec:include>.*_EXPORT_.*</sec:include>
+		        <sec:include>.*_EXPORT1024_.*</sec:include>
+		        <sec:include>.*_WITH_DES_.*</sec:include>
+		        <sec:include>.*_WITH_NULL_.*</sec:include>
+		        <sec:exclude>.*_DH_anon_.*</sec:exclude>
+	        </sec:cipherSuitesFilter>
+	    </http:tlsClientParameters>
+	    <http:client AutoRedirect="true" Connection="Keep-Alive"/>
+    </http:conduit>
+</beans>
